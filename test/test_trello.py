@@ -1,4 +1,8 @@
-from trello import TrelloClient
+#from trello import TrelloClient
+from trello.board import Board, BoardProvider
+from trello.card import Card, CardProvider
+from trello.list import List, ListProvider
+from trello.client import TrelloClient
 import unittest
 import os
 
@@ -11,10 +15,28 @@ class TrelloClientTestCase(unittest.TestCase):
 
 	def setUp(self):
 		self._trello = TrelloClient(os.environ['TRELLO_API_KEY'], os.environ['TRELLO_TOKEN'])
+		self._boardProvider = BoardProvider(self._trello)
+		self._cardProvider = CardProvider(self._trello)
+		self._listProvider = ListProvider(self._trello)
 
 	def tearDown(self):	
 		#self._trello.logout()
 		pass
+
+	def test001_get_board_by_id(self):
+		board = self._boardProvider.get_by_id('4fbcbe42608cb6817410987e')
+		print board
+
+	def test002_get_all_boards(self):
+		self.assertEquals(
+			len(self._boardProvider.get_all()),
+			int(os.environ['TRELLO_TEST_BOARD_COUNT']))
+
+"""
+	def test002_get_all_boards(self):
+		boards = self._boardProvider.get_all()
+		for b in boards:
+			print str(b)
 
 	def test01_list_boards(self):
 		self.assertEquals(
@@ -132,6 +154,7 @@ class TrelloClientTestCase(unittest.TestCase):
 def suite():
 	tests = ['test01_list_boards', 'test10_board_attrs', 'test20_add_card']
 	return unittest.TestSuite(map(TrelloClientTestCase, tests))
+"""
 
 if __name__ == "__main__":
 	unittest.main()
