@@ -57,4 +57,4 @@ class Board(object):
         pass
 
     def __str__(self):
-        return "(id:%(id)s) %(name)s" % {'name':self.name,'id':self.id}
+        return "(board:%(id)s) %(name)s" % {'name':self.name,'id':self.id}

@@ -33,7 +33,7 @@ class ListFactory(object):
     def from_json(cls, json_obj):
         """ Deserializes a List object from a JSON representation. """
         board_list = List()
-        board_board_listid = json_obj['id']
+        board_list.id = json_obj['id']
         board_list.name = json_obj['name']
         board_list.closed = json_obj['closed']
         return board_list
@@ -43,7 +43,7 @@ class ListFactory(object):
         """ Deserializes a collection of List objects from a JSON representation. """
         lists = list()
         for l in json_obj:
-            lists.append(List.from_json(l))
+            lists.append(ListFactory.from_json(l))
         return lists
 
 class List(object):
@@ -54,6 +54,6 @@ class List(object):
         pass
 
     def __str__(self):
-        return "(id:%(id)s) %(name)s" % {'name':self.name,'id':self.id}
+        return "(list:%(id)s) %(name)s" % {'name':self.name,'id':self.id}
 
 
