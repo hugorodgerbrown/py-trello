@@ -17,15 +17,10 @@ class BoardProvider(client.EntityProvider):
         json_obj = self.client.fetch_json('/members/me/boards/all')
         return BoardFactory.from_json_list(json_obj)
 
-class BoardFactory(object):
+        
+class BoardFactory(client.EntityFactory):
 
     """ Factory class used to create Board objects from underlying JSON representation """
-
-    def __init__(self):
-        pass
-
-    def __str__(self):
-        return "(id:%(id)s) %(name)s" % {'name':self.name,'id':self.id}
 
     @classmethod
     def from_json(cls, json_obj):
@@ -37,14 +32,6 @@ class BoardFactory(object):
         board.closed = json_obj['closed']
         board.url = json_obj['url']
         return board
-
-    @classmethod
-    def from_json_list(cls, json_obj):
-        """ Deserializes a collection of Board objects from a JSON representation. """
-        boards = list()
-        for b in json_obj:
-            boards.append(BoardFactory.from_json(b))
-        return boards
 
 class Board(object):
 

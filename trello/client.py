@@ -3,6 +3,23 @@ from httplib2 import Http
 from urllib import urlencode
 import json
 
+class EntityFactory():
+    
+    """ Base class for subclasses that are used to create entity objects from underlying data. """
+
+    @classmethod
+    def from_json(cls, json_obj):
+        raise Exception(str(cls) + " subclass does not implement EntityFactory.from_json() method.") # must be overridden by the subclass, otherwise throws exception
+
+    @classmethod
+    def from_json_list(cls, json_obj):
+        """ Deserializes a collection of objects from a JSON representation. """
+        entities = list()
+        for entity in json_obj:
+            entities.append(cls.from_json(entity))
+        return entities
+
+
 class EntityProvider():
 
     """Base class for all entity provider classes.

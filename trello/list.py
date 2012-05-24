@@ -25,7 +25,7 @@ class ListProvider(client.EntityProvider):
         """ Fetches the closed lists on a board. """
         return self.get_lists(board_id, 'closed')
 
-class ListFactory(object):
+class ListFactory(client.EntityFactory):
 
     """ Factory class used to create List objects from underlying JSON representation """
 
@@ -37,14 +37,6 @@ class ListFactory(object):
         board_list.name = json_obj['name']
         board_list.closed = json_obj['closed']
         return board_list
-
-    @classmethod
-    def from_json_list(cls, json_obj):
-        """ Deserializes a collection of List objects from a JSON representation. """
-        lists = list()
-        for l in json_obj:
-            lists.append(ListFactory.from_json(l))
-        return lists
 
 class List(object):
 

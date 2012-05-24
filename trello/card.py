@@ -12,12 +12,13 @@ class CardProvider(client.EntityProvider):
         json_obj = self.client.fetch_json('/cards/'+card_id, query_params = {'badges': False})
         return CardFactory.from_json(json_obj)
 
-    def get_list_cards(self, list_id):
+    def get_cards(self, list_id):
         """ Fetches all of the Cards on a list"""
         json_obj = self.client.fetch_json('/lists/'+list_id+'/cards')
         return CardFactory.from_json_list(json_obj)
 
-class CardFactory(object):
+
+class CardFactory(client.EntityFactory):
 
     """ Factory class used to create Card objects from underlying JSON representation """
 
@@ -32,13 +33,6 @@ class CardFactory(object):
         card.url = json_obj['url']
         return card
 
-    @classmethod
-    def from_json_list(cls, json_obj):
-        """ Deserializes a collection of Card objects from a JSON representation. """
-        cards = list()
-        for c in json_obj:
-            cards.append(CardFactory.from_json(c))
-        return cards
 
 class Card(object):
 
