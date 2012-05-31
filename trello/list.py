@@ -1,21 +1,25 @@
 """ This module contains code used to interact with Trello Lists. 
 
-"""
-from trello import client
+    This module uses multiple inheritance to incorporate both
+    EntityFactoryBase and EntityBase into the List class. It's
+    a combination of the approaches used in the Board and Card classes.
 
-class ListProvider(client.EntityProvider):
+"""
+from trello import client, entity
+
+class ListProvider(entity.EntityProviderBase):
 
     """ Provider class used to access fetch lists from the Trello API """
 
     def get_by_id(self, list_id):
         """ Fetches a specific List using the unique id property """
         json_obj = self.client.fetch_json('/lists/' + list_id)
-        return ListFactory.from_json(json_obj)
+        return List.from_json(json_obj)
 
     def get_lists(self, board_id, list_filter = 'all'):
         """ Fetches the lists on a board. """
         json_obj = self.client.fetch_json('/boards/'+board_id+'/lists',query_params = {'cards': 'none', 'filter': list_filter})
-        return ListFactory.from_json_list(json_obj)
+        return List.from_json_list(json_obj)
 
     def get_open_lists(self, board_id):
         """ Fetches the open lists on a board. """
@@ -25,9 +29,9 @@ class ListProvider(client.EntityProvider):
         """ Fetches the closed lists on a board. """
         return self.get_lists(board_id, 'closed')
 
-class ListFactory(client.EntityFactory):
+class List(entity.EntityFactoryBase, entity.EntityBase):
 
-    """ Factory class used to create List objects from underlying JSON representation """
+    """ Class representing a Trello List entity. """
 
     @classmethod
     def from_json(cls, json_obj):
@@ -37,15 +41,5 @@ class ListFactory(client.EntityFactory):
         board_list.name = json_obj['name']
         board_list.closed = json_obj['closed']
         return board_list
-
-class List(object):
-
-    """ Class representing a Trello List entity. """
-
-    def __init__(self):
-        pass
-
-    def __str__(self):
-        return "(list:%(id)s) %(name)s" % {'name':self.name,'id':self.id}
 
 

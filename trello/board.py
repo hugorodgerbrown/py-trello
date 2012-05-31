@@ -1,26 +1,26 @@
 """ This module contains code used to interact with Trello Boards. 
 
 """
-from trello import client
+from trello import client, entity
 
-class BoardProvider(client.EntityProvider):
+class BoardProvider(entity.EntityProviderBase):
 
     """ Provider class used to manage the Trello API operations """
 
     def get_by_id(self, board_id):
         """ Fetches a specific board using the unique id property """
         json_obj = self.client.fetch_json('/boards/' + board_id)
-        return BoardFactory.from_json(json_obj)
+        return Board.from_json(json_obj)
 
     def get_all(self):
         """ Fetches all of the boards that a user has access to """
         json_obj = self.client.fetch_json('/members/me/boards/all')
-        return BoardFactory.from_json_list(json_obj)
+        return Board.from_json_list(json_obj)
 
         
-class BoardFactory(client.EntityFactory):
+class Board(entity.EntityBase, entity.EntityFactoryBase):
 
-    """ Factory class used to create Board objects from underlying JSON representation """
+    """ Class representing a Trello board entity."""
 
     @classmethod
     def from_json(cls, json_obj):
@@ -32,16 +32,3 @@ class BoardFactory(client.EntityFactory):
         board.closed = json_obj['closed']
         board.url = json_obj['url']
         return board
-
-class Board(object):
-
-    """ Class representing a Trello board entity.
-
-        Board objects can be created from a JSON representation using the BoardFactory class.
-    """
-
-    def __init__(self):
-        pass
-
-    def __str__(self):
-        return "(board:%(id)s) %(name)s" % {'name':self.name,'id':self.id}

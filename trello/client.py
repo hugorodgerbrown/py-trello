@@ -1,52 +1,12 @@
+""" This modules manages HTTP interaction with the Trello API. 
+
+    This module is taken as is from the original py-trello project.
+"""
 
 from httplib2 import Http
 from urllib import urlencode
 import json
-
-class EntityFactory():
-    
-    """ Base class for subclasses that are used to create entity objects from underlying data. """
-
-    @classmethod
-    def from_json(cls, json_obj):
-        raise Exception(str(cls) + " subclass does not implement EntityFactory.from_json() method.") # must be overridden by the subclass, otherwise throws exception
-
-    @classmethod
-    def from_json_list(cls, json_obj):
-        """ Deserializes a collection of objects from a JSON representation. """
-        entities = list()
-        for entity in json_obj:
-            entities.append(cls.from_json(entity))
-        return entities
-
-
-class EntityProvider():
-
-    """Base class for all entity provider classes.
-
-    The EntityProvider base class holds a reference to the TrelloClient object that actually 
-    calls the relevant API. The Provider subclasses contain the URL formatting / logic required
-    to drive the API for the relevant entity.
-
-    """
-
-    def __init__(self, trello_client):
-        self.client = trello_client
-
-
-class ResourceUnavailable(Exception):
-
-    """Exception representing a failed request to a resource."""
-
-    def __init__(self, url, status_code, content):
-        Exception.__init__(self)
-        self._url = url
-        self._status = status_code
-        self._msg = content
-
-    def __str__(self):
-        print "Resource unavailable at %(url)s\nAPI response = %(status)s %(message)s" % {'status':self._status, 'message':self._msg, 'url':self._url}
-
+import entity
 
 class TrelloClient(object):
 
@@ -137,5 +97,18 @@ class TrelloClient(object):
 
         # error checking
         if response.status != 200:
-            raise ResourceUnavailable(url, response.status, content)
+            raise ResourceUnavailableError(url, response.status, content)
         return json.loads(content)
+
+class ResourceUnavailableError(Exception):
+
+    """Exception representing a failed request to a resource."""
+
+    def __init__(self, url, status_code, content):
+        Exception.__init__(self)
+        self._url = url
+        self._status = status_code
+        self._msg = content
+
+    def __str__(self):
+        print "Resource unavailable; API response = %(status)s %(message)s" % {'status':self._status, 'message':self._msg, 'url':self._url}
