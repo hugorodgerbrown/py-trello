@@ -2,23 +2,26 @@ Python wrapper around the Trello API used to experiment with Python programming 
 
 This project was forked from https://github.com/sarumont/py-trello and has been updated to in an attempt to simplify it (or unsimplify, depending on your point of view). All (constructive) feedback is welcome.
 
-_At the moment I have only implemented some GET operations on Board, List and Card entities. 
-It covers about 10% of the total Trello API. Do not use this if you are looking for a 
-comprehensive solution._
+_At the moment I have only implemented some GET operations on Board, List and Card entities. It covers about 10% of the total Trello API. Do not use this if you are looking for a comprehensive solution._
 
-The core of the solution is based around three concepts - entity, provider and factory classes. The Trello API is RESTful,  and so maps very cleanly onto the concept of addressable resources. Each of these resources is mapped to an Entity class within the solution. These entity classes are just data structures - they don't know how to store / retrieve themselves, they are just used for passing data around.
+The core of the solution is based around three concepts:
 
-The second concept is that of the data provider. Each entity has a related Provider class that is responsible for marshalling the API calls themselves. The Provider class is where you will find all of the entity retrieval methods - get_all, get_by_id, get_by_x etc. In concrete terms the provider is responsible formatting the API URLs, determining which API to call, and for converting the output back to the relevant Entity. It does this using a Factory class.
+* entities, which contain data and represent API resources
+* providers, which manage API interaction, and
+* factories, which manage the creation of entities from the API response JSON
 
-I have used python's multiple inheritance to incorporate both entity and factory classes into a single entity class. Why? Not sure, but it keeps a clean distinction between the data entity and the specifics of deserialisation. I think it's an 'unsimplification' if I'm honest, but I started out having two classes - entity and entity factory, and then decided to combine them into one.
+The Provider class is where you will find all of the entity retrieval methods - get_all, get_by_id, get_by_x etc. In concrete terms the provider is responsible formatting the API URLs, determining which API to call, and for converting the output back to the relevant Entity. It does this using a Factory class.
 
-The other main class provided by this project is the TrelloClient, which is the main class with which users of the library will interact. The TrelloClient class contains the logic for interacting with the API itself - managing the HTTP calls and interpreting response content. This class is essentially unchanged from the original, so h/t to Richard Kolkovich (sarumont) that. Thank you Richard.
+I have used python's multiple inheritance to incorporate both entity and factory classes into a single subclass for each entity type (Board, List, Card etc.) I started out having two classes - entity and entity factory, and then decided to combine them into one. Not entirely sure if this works or not, but the result is pretty clean.
+
+The other main class provided by this project is the TrelloClient, which is the main class with which users of the library will interact. The TrelloClient class contains the logic for interacting with the API itself - managing the HTTP calls formatting URLs, API tokens etc. This class is essentially unchanged from the original, so h/t to Richard Kolkovich (sarumont) that. Thank you Richard.
 
 Using this approach, the work required to add a new entity is as follows (using Widget as the example):
 
 * Create the Widget class, inheriting from both EntityBase and EntityFactoryBase classes
-** Implement the Widget.from_json method.
-* Create the WidgetProvider class with any relevant get_xxxx methods required.
+* Implement the Widget.from_json method
+* Create the WidgetProvider class
+* Implement any relevant get_xxxx methods required
 
 Sample usage of the client library is as follows:
 
@@ -54,6 +57,6 @@ In order to run the tests:
 * Replace the TRELLO_TOKEN and TRELLO_API_KEY with your own values from https://trello.com/1/appKey/generate
 * Run (from py-trello/):
 
-'''
+```
 PYTHONPATH=. python test/test_trello.py
-'''
+```
