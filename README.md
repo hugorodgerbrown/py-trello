@@ -1,6 +1,6 @@
 Python wrapper around the Trello API used to experiment with Python programming patterns (there are other Trello API clients available). It's a "(retired) .net developer takes on python" experiment - so please bear that in mind when looking at it.
 
-This project was forked from https://github.com/sarumont/py-trello and has been updated to in an attempt to simplify it (or unsimplify, depending on your point of view). All (constructive) feedback is welcome.
+This project was forked from https://github.com/sarumont/py-trello. I have attempted to break it out into a structure that feels a little more familiar to someone coming from .net, and would be interested to hear from long-term pythonistas whether my attempt looks more or less complicated than the original. The underlying principle is to make it as easy as possible to add new entities and to be able to debug it. All (constructive) feedback is welcome.
 
 _At the moment I have only implemented some GET operations on Board, List and Card entities. It covers about 10% of the total Trello API. Do not use this if you are looking for a comprehensive solution._
 
