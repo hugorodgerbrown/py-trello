@@ -11,6 +11,9 @@
 
 from models import Board, Card, List
 from trello import client
+from exceptions import ResourceUnavailableException
+import requests
+import json
 
 class ProviderBase():
 
@@ -32,7 +35,10 @@ class ProviderBase():
         url = self.client.build_url(path)
         try:
             response = requests.get(url, params=query_params, headers=headers)
-            return json.loads(response.text)
+            if response.status_code != 200:
+                raise ResourceUnavailableException(url, response.status_code, response.text)
+            else:
+                return json.loads(response.text)
         except requests.RequestException:
             # TODO: error checking
             raise
@@ -70,13 +76,13 @@ class CardProvider(ProviderBase):
 
     def get_by_id(self, card_id):
         """ Fetches a specific Card using the unique id property."""
-        json_obj = self.client.fetch_json('/cards/'+card_id, query_params = {'badges': False})
-        return CardFactory.from_json(json_obj)
+        json_obj = self.get_json('/cards/'+card_id, query_params = {'badges': False})
+        return Card.from_json(json_obj)
 
     def get_cards(self, list_id):
         """ Fetches all of the Cards on a list"""
-        json_obj = self.client.fetch_json('/lists/'+list_id+'/cards')
-        return CardFactory.from_json_list(json_obj)
+        json_obj = self.get_json('/lists/'+list_id+'/cards')
+        return Card.from_json_list(json_obj)
 
 
 class ListProvider(ProviderBase):
@@ -85,12 +91,12 @@ class ListProvider(ProviderBase):
 
     def get_by_id(self, list_id):
         """ Fetches a specific List using the unique id property """
-        json_obj = self.client.fetch_json('/lists/' + list_id)
+        json_obj = self.get_json('/lists/' + list_id)
         return List.from_json(json_obj)
 
     def get_lists(self, board_id, list_filter = 'all'):
         """ Fetches the lists on a board. """
-        json_obj = self.client.fetch_json('/boards/'+board_id+'/lists',query_params = {'cards': 'none', 'filter': list_filter})
+        json_obj = self.get_json('/boards/'+board_id+'/lists',query_params = {'cards': 'none', 'filter': list_filter})
         return List.from_json_list(json_obj)
 
     def get_open_lists(self, board_id):

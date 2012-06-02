@@ -1,5 +1,5 @@
 
-class ResourceUnavailableError(Exception):
+class ResourceUnavailableException(Exception):
     
     """Exception representing a failed request to a resource."""
 

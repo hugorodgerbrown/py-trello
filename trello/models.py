@@ -12,7 +12,7 @@
 
 class EntityBase():
 
-    """ Base class for all entities - defines generic __str__ implementation """
+    """ Base class for all entities - defines common __str__ implementation """
 
     def __str__(self):
         return "(%(class)s:%(id)s) %(name)s" % {'name':self.name,'id':self.id, 'class':self.__class__.__name__}
@@ -54,7 +54,7 @@ class Board(EntityBase, EntityFactoryBase):
         return board
 
 
-class Card(EntityBase):
+class Card(EntityBase, EntityFactoryBase):
 
     """ Class representing a Trello Card entity. """
 

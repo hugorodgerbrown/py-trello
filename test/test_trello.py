@@ -3,8 +3,9 @@ from trello.providers import BoardProvider, ListProvider, CardProvider
 from trello.client import TrelloClient
 import unittest
 
-TRELLO_API_KEY = 'YOUR_KEY_GOES_HERE'
-TRELLO_TOKEN = 'YOUR_TOKEN_GOES_HERE'
+# get your token / key from here - https://trello.com/1/appKey/generate
+TRELLO_API_KEY = ''
+TRELLO_TOKEN = ''
 
 class TrelloClientTestCase(unittest.TestCase):
 
@@ -17,6 +18,7 @@ class TrelloClientTestCase(unittest.TestCase):
         self.client = TrelloClient(TRELLO_API_KEY, TRELLO_TOKEN)
         self.boards = BoardProvider(self.client)
         self.lists = ListProvider(self.client)
+        self.cards = CardProvider(self.client)
 
     def tearDown(self): 
         #self._trello.logout()
@@ -30,6 +32,9 @@ class TrelloClientTestCase(unittest.TestCase):
             # now loop through the lists
             for l in self.lists.get_lists(b.id):
                 print "  %s" % l
+                # now loop through the lists
+                for c in self.cards.get_cards(l.id):
+                    print "    %s" % c
 
 
 if __name__ == "__main__":
