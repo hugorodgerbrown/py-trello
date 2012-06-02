@@ -1,15 +1,8 @@
-""" This modules manages HTTP interaction with the Trello API. 
+""" This modules manages HTTP interaction with the Trello API."""
 
-    This module is taken as is from the original py-trello project.
-"""
-
-from httplib2 import Http
-from urllib import urlencode
-import json
-import entity
+import httplib2
 
 class TrelloClient(object):
-
     """ Base class for Trello API access."""
 
     def __init__(self, api_key, token, api_secret = None, token_secret = None):
@@ -33,6 +26,9 @@ class TrelloClient(object):
         self.api_key = api_key
         self.auth_token = token
 
+    def is_oauth(self):
+        return 
+
     def logout(self):
         """Log out of Trello. This method is idempotent."""
 
@@ -51,64 +47,22 @@ class TrelloClient(object):
         ## TODO: error checking
         #self._cookie = None
 
-    def build_url(self, path, query = {}):
+    def build_url(self, path):
         """
         Builds a Trello URL.
 
         :path: URL path
-        :params: dict of key-value pairs for the query string
 
         """
-        url = 'https://api.trello.com/1'
-        if path[0:1] != '/':
-            url += '/'
-        url += path
 
         if hasattr(self, 'oauth_token'):
-            url += '?'
-            url += "key="+self.oauth_token.key
-            url += "&token="+self.oauth_consumer.key
+            k = self.oauth_token.key
+            t = self.oauth_consumer.key
         else:
-            url += '?'
-            url += "key="+self.api_key
-            url += "&token="+self.auth_token
+            k = self.api_key
+            t = self.auth_token
 
-        if len(query) > 0:
-            url += '&'+urlencode(query)
+        url = 'https://api.trello.com/1%(path)s?key=%(key)s&token=%(token)s' % {'path':path, 'key':k, 'token':t}
 
         return url
 
-    def fetch_json(
-            self,
-            uri_path,
-            http_method = 'GET',
-            headers = {},
-            query_params = {},
-            post_args = {}):
-        """ Fetch some JSON from Trello """
-
-        headers['Accept'] = 'application/json'
-        url = self.build_url(uri_path, query_params)
-        response, content = self.client.request(
-                url,
-                http_method,
-                headers = headers,
-                body = json.dumps(post_args))
-
-        # error checking
-        if response.status != 200:
-            raise ResourceUnavailableError(url, response.status, content)
-        return json.loads(content)
-
-class ResourceUnavailableError(Exception):
-
-    """Exception representing a failed request to a resource."""
-
-    def __init__(self, url, status_code, content):
-        Exception.__init__(self)
-        self._url = url
-        self._status = status_code
-        self._msg = content
-
-    def __str__(self):
-        print "Resource unavailable; API response = %(status)s %(message)s" % {'status':self._status, 'message':self._msg, 'url':self._url}

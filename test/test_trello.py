@@ -1,5 +1,5 @@
-from trello.board import Board, BoardProvider
-from trello.list import List, ListProvider
+from trello.models import Board, Card, List
+from trello.providers import BoardProvider, ListProvider, CardProvider
 from trello.client import TrelloClient
 import unittest
 
